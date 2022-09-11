@@ -1,0 +1,45 @@
+version: '3.9'
+
+
+services:
+  db:
+    image: postgres:14-alpine
+    ports:
+      - '5432:5432'
+
+    volumes:
+      - ./data/db:/var/lib/postgresql/data/
+    
+    env_file:
+      - ./.env
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    ports:
+      - '3000:3000'
+
+    volumes:
+      - ./frontend:/app/frontend
+
+    depends_on:
+      - backend
+
+  backend: 
+
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+
+    ports:
+      - '8000:8000'
+
+    restart: on-failure
+
+    depends_on:
+      - db
+    
+    env_file:
+      - ./.env
